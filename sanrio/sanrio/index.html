@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sanrio World</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='30' x='20'>⭐️</text><text y='.9em' font-size='30' x='50'>⭐️</text><text y='.9em' font-size='30' x='80'>⭐️</text></svg>">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f9f0ff;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        header {
+            background: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            color: #ff69b4;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        /* Navigation Styles */
+        nav {
+            margin-top: 1rem;
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #ff69b4;
+        }
+
+        /* Main Content Styles */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            color: #ff69b4;
+            margin-bottom: 1.5rem;
+            font-size: clamp(1.75rem, 4vw, 2.25rem);
+            text-align: center;
+        }
+
+        /* Character Grid Styles */
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem;
+        }
+
+        .character-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .character-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .character-image {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1;
+            object-fit: cover;
+        }
+
+        .character-name {
+            padding: 1rem;
+            text-align: center;
+            color: #ff69b4;
+            font-weight: bold;
+        }
+
+        /* Meme Grid Styles */
+        .meme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem;
+        }
+
+        .meme-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .meme-image {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1;
+            object-fit: cover;
+        }
+
+        .meme-name {
+            padding: 1rem;
+            text-align: center;
+            color: #ff69b4;
+            font-weight: bold;
+            background: white;
+            border-top: 1px solid #ffb6c1;
+        }
+
+        /* Footer Styles */
+        footer {
+            background: white;
+            padding: 1.5rem;
+            text-align: center;
+            color: #666;
+            margin-top: 2rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+
+            .character-grid,
+            .meme-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 0.75rem;
+            }
+
+            .section {
+                padding: 1rem;
+            }
+
+            .character-grid,
+            .meme-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animation for floating hearts */
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+            100% { transform: translateY(0px) rotate(360deg); }
+        }
+
+        .floating-heart {
+            position: fixed;
+            font-size: 2rem;
+            color: #ff69b4;
+            animation: float 6s ease-in-out infinite;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* Loading Animation */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #ff69b4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Splash Page Styles */
+        .splash-page {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #ffe6f2, #fff0f7);
+        }
+
+        .splash-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .splash-title {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff66b3, #6666ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 3px 3px 6px rgba(255, 182, 193, 0.3);
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        .splash-subtitle {
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            color: #ff66b3;
+            margin-bottom: 40px;
+            animation: fadeIn 1.5s ease-out 0.5s backwards;
+        }
+
+        .splash-button {
+            background: linear-gradient(45deg, #ff66b3, #ff8dc7);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 102, 179, 0.3);
+            animation: fadeIn 1.5s ease-out 1s backwards;
+        }
+
+        .splash-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 102, 179, 0.4);
+        }
+
+        /* Decorative Elements */
+        .cloud {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+        }
+
+        .cloud-1 {
+            width: 100px;
+            height: 40px;
+            top: 10%;
+            left: 10%;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .cloud-2 {
+            width: 150px;
+            height: 60px;
+            top: 20%;
+            right: 15%;
+            animation: float 10s ease-in-out infinite reverse;
+        }
+
+        .cloud-3 {
+            width: 80px;
+            height: 30px;
+            bottom: 20%;
+            left: 20%;
+            animation: float 7s ease-in-out infinite;
+        }
+
+        .cloud-4 {
+            width: 120px;
+            height: 50px;
+            bottom: 30%;
+            right: 10%;
+            animation: float 9s ease-in-out infinite reverse;
+        }
+
+        .star {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #ffcc00;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            animation: twinkle 2s ease-in-out infinite;
+        }
+
+        .star-1 { top: 15%; left: 20%; animation-delay: 0s; }
+        .star-2 { top: 25%; right: 25%; animation-delay: 0.5s; }
+        .star-3 { top: 40%; left: 30%; animation-delay: 1s; }
+        .star-4 { top: 50%; right: 20%; animation-delay: 1.5s; }
+        .star-5 { top: 65%; left: 25%; animation-delay: 2s; }
+        .star-6 { top: 75%; right: 30%; animation-delay: 2.5s; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Splash Page -->
+    <section class="splash-page">
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="cloud cloud-3"></div>
+        <div class="cloud cloud-4"></div>
+        
+        <div class="star star-1"></div>
+        <div class="star star-2"></div>
+        <div class="star star-3"></div>
+        <div class="star star-4"></div>
+        <div class="star star-5"></div>
+        <div class="star star-6"></div>
+
+        <div class="splash-content">
+            <h1 class="splash-title">Welcome to Sanrio World</h1>
+            <p class="splash-subtitle">Discover the magical world of kawaii characters and memes!</p>
+            <button class="splash-button" onclick="scrollToContent()">Enter the World</button>
+        </div>
+    </section>
+
+    <!-- Floating Hearts -->
+    <div class="floating-heart" style="left: 10%; top: 20%;">❤️</div>
+    <div class="floating-heart" style="left: 20%; top: 50%;">💖</div>
+    <div class="floating-heart" style="left: 30%; top: 30%;">💕</div>
+    <div class="floating-heart" style="left: 40%; top: 70%;">💗</div>
+    <div class="floating-heart" style="left: 50%; top: 40%;">💓</div>
+    <div class="floating-heart" style="left: 60%; top: 60%;">💝</div>
+    <div class="floating-heart" style="left: 70%; top: 30%;">💘</div>
+    <div class="floating-heart" style="left: 80%; top: 50%;">💞</div>
+    <div class="floating-heart" style="left: 90%; top: 20%;">💟</div>
+
+    <header>
+        <a href="#" class="logo">Sanrio World</a>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#memes">Memes</a></li>
+                <li><a href="#kols">KOLs</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="section">
+            <h2 class="section-title">Welcome to Sanrio World</h2>
+            <div class="character-grid">
+                <!-- Character cards will be dynamically added here -->
+            </div>
+        </section>
+
+        <section id="memes" class="section">
+            <h2 class="section-title">Meme Gallery</h2>
+            <div class="meme-grid">
+                <!-- Meme cards will be dynamically added here -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2024 Sanrio World. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Remove loading screen when page is loaded
+        window.addEventListener('load', () => {
+            document.querySelector('.loading').style.display = 'none';
+        });
+
+        // Add dynamic content
+        document.addEventListener('DOMContentLoaded', () => {
+            const characterGrid = document.querySelector('.character-grid');
+            const memeGrid = document.querySelector('.meme-grid');
+
+            // Add character cards
+            const characters = [
+                { name: 'Hello Kitty', image: 'kitty.png' },
+                { name: 'Kuromi', image: 'kuromi.png' },
+                { name: 'Cinnamoroll', image: 'cinno.png' }
+            ];
+
+            characters.forEach(character => {
+                const card = document.createElement('div');
+                card.className = 'character-card';
+                card.innerHTML = `
+                    <img src="../../characters/${character.image}" alt="${character.name}" class="character-image">
+                    <div class="character-name">${character.name}</div>
+                `;
+                characterGrid.appendChild(card);
+            });
+
+            // Add meme cards
+            const memes = [
+                { name: 'Trump', image: 'trump.jpg' },
+                { name: 'Elon', image: 'elon.jpg' },
+                { name: 'Look', image: 'look.jpg' },
+                { name: 'Disaster', image: 'disaster.jpg' },
+                { name: 'CZ', image: 'cz.jpg' },
+                { name: 'Charlie', image: 'charlie.jpg' },
+                { name: 'Pulp', image: 'pulp.jpg' },
+                { name: 'Gatsby', image: 'gatsby.jpg' },
+                { name: 'Hell', image: 'hell.jpg' },
+                { name: '911', image: '911.jpg' },
+                { name: 'FW', image: 'fw.jpg' },
+                { name: 'Frog', image: 'frog.jpg' },
+                { name: 'Alon', image: 'alon.jpg' },
+                { name: 'Moo', image: 'moo.jpg' },
+                { name: 'Trench', image: 'trench.jpg' },
+                { name: 'Fine', image: 'fine.jpg' },
+                { name: 'Bob', image: 'bob.jpg' },
+                { name: 'Snoop', image: 'snoop.jpg' },
+                { name: 'Girl', image: 'girl.jpg' },
+                { name: 'Leo', image: 'leo1.jpg' },
+                { name: 'Stand', image: 'stand.jpg' },
+                { name: 'Elmo', image: 'elmo.jpg' }
+            ];
+
+            memes.forEach(meme => {
+                const card = document.createElement('div');
+                card.className = 'meme-card';
+                card.innerHTML = `
+                    <img src="../../memes/${meme.image}" alt="${meme.name}" class="meme-image">
+                    <div class="meme-name">${meme.name}</div>
+                `;
+                memeGrid.appendChild(card);
+            });
+        });
+
+        // Add scroll to content function
+        function scrollToContent() {
+            document.querySelector('main').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Add scroll event listener to hide splash page
+        window.addEventListener('scroll', () => {
+            const splash = document.querySelector('.splash-page');
+            if (window.scrollY > window.innerHeight / 2) {
+                splash.style.opacity = '0';
+                splash.style.pointerEvents = 'none';
+            } else {
+                splash.style.opacity = '1';
+                splash.style.pointerEvents = 'auto';
+            }
+        });
+    </script>
+</body>
+</html> 
